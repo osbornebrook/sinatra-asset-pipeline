@@ -2,15 +2,11 @@
 
 An asset pipeline implementation for Sinatra based on [Sprockets](https://github.com/sstephenson/sprockets) with support for CoffeeScript, SASS, SCSS, LESS, ERB as well as CSS (SASS, YUI) and JavaScript (uglifier, YUI, Closure) minification.
 
+sinatra-asset-pipeline supports both compiling assets on the fly for development as well as precompiling assets for production.
+
 # Installation
 
-Install sinatra-asset-pipeline from RubyGems:
-
-```bash
-$ gem install sinatra-asset-pipeline
-```
-
-Or include it in your project's Gemfile with Bundler:
+Include sinatra-asset-pipeline in your project's Gemfile:
 
 ```ruby
 gem 'sinatra-asset-pipeline'
@@ -19,27 +15,27 @@ gem 'sinatra-asset-pipeline'
 Make sure to add the sinatra-asset-pipeline Rake task in your applications `Rakefile`:
 
 ```ruby
-require 'sinatra/asset_pipeline/task.rb'
+require 'sinatra/asset_pipeline/task'
 require './app'
 
 Sinatra::AssetPipeline::Task.define! App
 ```
 
-Now, when everything is in place you can precompile assets with:
+Now, when everything is in place you can precompile assets located in `assets/<asset-type>` with:
 
 ```bash
-$ rake assets:precompile
+$ RACK_ENV=production rake assets:precompile
 ```
 
 And remove old compiled assets with:
 
 ```bash
-$ rake assets:clean
+$ RACK_ENV=production rake assets:clean
 ```
 
 # Example
 
-In it's most simple form you just register the `Sinatra::AssetPipeline` Sinatra extension within your Sinatra app.
+In its most simple form, you just register the `Sinatra::AssetPipeline` Sinatra extension within your application:
 
 ```ruby
 Bundler.require
@@ -66,8 +62,8 @@ class App < Sinatra::Base
   # Include these files when precompiling assets
   set :assets_precompile, %w(app.js app.css *.png *.jpg *.svg *.eot *.ttf *.woff)
 
-  # Logical path to your assets
-  set :assets_prefix, 'assets'
+  # Logical paths to your assets
+  set :assets_prefix, %w(assets vendor/assets)
 
   # Use another host for serving assets
   set :assets_host, '<id>.cloudfront.net'
@@ -90,7 +86,7 @@ class App < Sinatra::Base
 end
 ```
 
-Now when everything is in place you can use all helpers provided by [sprockets-helpers](https://github.com/petebrowne/sprockets-helpers), here is a small example:
+Now when everything is in place you can use all helpers provided by [sprockets-helpers](https://github.com/petebrowne/sprockets-helpers), an example:
 
 ```scss
 body {
@@ -98,9 +94,11 @@ body {
 }
 ```
 
+Note that you don't need to require [sprockets-helpers](https://github.com/petebrowne/sprockets-helpers) inside your code to leverage the functionallity given to you by the integration, sinatra-asset-pipeline handles that for you.
+
 ### CSS and JavaScript minification
 
-If you would like to use CSS and/or JavaScript minification make sure to require the gems needed in your `Gemfile`.
+If you would like to use CSS and/or JavaScript minification make sure to require the needed gems in your `Gemfile`:
 
 <table>
   <tr>
@@ -127,5 +125,5 @@ If you would like to use CSS and/or JavaScript minification make sure to require
 
 ### Compass integration
 
-Given that we're using [sprockets-sass](https://github.com/petebrowne/sprockets-sass) we have out of the box support for compass. Just include the compass gem in your `Gemfile` and include the compass mixins in your `app.css.scss` file.
+Given that we're using [sprockets-sass](https://github.com/petebrowne/sprockets-sass) under the hood we have out of the box support for [compass](https://github.com/chriseppstein/compass). Just include the compass gem in your `Gemfile` and include the compass mixins in your `app.css.scss` file.
 
